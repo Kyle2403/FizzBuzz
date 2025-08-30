@@ -1,0 +1,38 @@
+services:
+  backend:
+    build: ./api
+    container_name: fizzbuzz-backend
+    ports:
+      - "5271:5271"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=1433
+      - DB_NAME=mydb
+      - DB_USER=sa
+      - DB_PASSWORD=YourStrong!Passw0rd
+    depends_on:
+      - db
+
+  frontend:
+    build: ./next
+    container_name: fizzbuzz-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+    - API_URL=http://backend:5271
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: fizzbuzz-db
+    environment:
+      SA_PASSWORD: "YourStrong!Passw0rd"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - db-data:/var/opt/mssql
+
+volumes:
+  db-data:
